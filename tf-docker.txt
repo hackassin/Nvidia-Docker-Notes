@@ -1,0 +1,103 @@
+sudo docker run --ipc=host --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/:/media/amlan/LinuxDev/research/ nvcr.io/nvidia/tensorflow:21.09-tf2-py3
+
+sudo docker run --ipc=host --runtime nvidia -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/:/media/amlan/LinuxDev/research/ nvcr.io/nvidia/tensorflow:21.09-tf2-py3
+
+
+Issue: OCI Runtime Failed, cgroup subsystems not found
+
+Solution: sudo gedit /etc/nvidia-container-runtime/config.toml
+
+Edit no_cgroups = True
+
+Run dockers in privileged mode so that the docker can access the system GPUs
+ 
+sudo docker run --rm --privileged --ipc=host --runtime nvidia -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/:/media/amlan/LinuxDev/research/ nvcr.io/nvidia/tensorflow:21.09-tf2-py3
+
+sudo docker run --rm --privileged --ipc=host --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/:/media/amlan/LinuxDev/research/ nvcr.io/nvidia/tensorflow:21.09-tf2-py3
+
+Notes
+-- In conv2d transpose, higher the stride -> bigger the output resolution
+-- Output shape for generator model can be mainly controlled by the reshape layer
+
+Improvement attempts:
+
+Iteration-1: Modified and added 3x3 kernels in generator and discriminator functions, added display of loss values (Results are not satisfactory, loss values are not dropping)
+
+Iteration-2: Reverting to default execution (4x4 kernel)
+
+Result: Much better results
+
+Iteration-3: Added extra 4x4 kernels
+
+Result: No improvement
+
+Iteration 4: Default for 200 epochs
+
+Result: Even better examples
+
+Iteration 5: Default for 300 epochs
+
+Result: Overfitting
+-----------------------------------------------------------------------------------------------------------------------------------------
+1. Save plots;
+2. Modify loss capture logic;
+-- Add modifications
+--- Difference between GAN and Discriminator loss
+---- Will provide an overall perspective of GAN training
+3. Add instance normalization;
+4. Conditional Frechet Inception Distance (Later)
+5. Save generated images by category;
+6. Image classifiers (ResNet 18, ResNet 34, ResNet 50)
+7. TFRecords (Later)
+-----------------------------------------------------------------------------------------------------------------------------------------
+Iteration Version - 2
+
+1. Training time - 26min 16s, epochs = 40, instance normalization with one flaw, results = okay
+2. Training time - 18min 1s, epochs = 40, batch normalization
+3. Training time - 3hrs 14 mins, epochs = 300, instance normalization, results = perfect
+-----------------------------------------------------------------------------------------------------------------------------------------
+Image classification validation strategy
+Dataset Size
+
+Without GAN:
+
+Size of AMD:  361
+Size of DR:  1961
+Size of MH:   289
+             2611
+
+With GAN:
+
+Size of AMD: 1061
+Size of DR:  2661
+Size of MH:  1001
+
+Handling class imbalance: Shuffle the dataset and balance
+
+Keep 1000 images per class for training
+
+generated, train
+
+generated + train -> slice by class
+
+- val split
+- concatenate dataset
+
+Just use pandas dataframe
+
+Models: ResNet50V2, EfficientNetB0, VGG19, Xception, MobileNetV2
+
+ResNet50V2:
+
+- Add Precision Recall
+- Plot charts
+- How to suppress the warnings
+
+Iteration:1
+
+Default hyperparams, optimizer = adam, epochs = 10
+
+Iteration:2
+
+- Include dropout
+- learning rate

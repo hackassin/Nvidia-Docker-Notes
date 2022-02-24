@@ -1,0 +1,51 @@
+Quick Start Guide: https://docs.nvidia.com/tao/tao-toolkit/text/tao_toolkit_quick_start_guide.html
+
+sudo docker run --rm --privileged --ipc=host --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/:/media/amlan/LinuxDev/research/ nvcr.io/nvidia/tao/tao-toolkit-tf:v3.21.11-tf1.15.5-py3
+
+1. Install nvidia-tao launcher python package
+
+pip3 install nvidia-pyindex
+pip3 install nvidia-tao
+
+2. Login to nvcr.io
+
+bm5iYWw1ODZkbm9rZTRuMmE4czI4ZW9sNG86MWZjN2M4ZjEtMjk2Yi00ODBkLTk1NGYtYzc4ZjNhZjcwMTIw
+
+2. Create a file sudo gedit ~/.tao_mounts.json
+
+{
+    "Mounts": [
+        {
+            "source": "/media/amlan/LinuxDev/research/dataset/detection/",
+            "destination": "/workspace/tao-experiments/data"
+        },
+        {
+            "source": "/media/amlan/LinuxDev/research/results/",
+            "destination": "/workspace/tao-experiments/results"
+        },
+        {
+            "source": "/media/amlan/LinuxDev/research/config/",
+            "destination": "/workspace/tao-experiments/specs"
+        }
+    ],
+    "Envs": [
+        {
+            "variable": "CUDA_DEVICE_ORDER",
+            "value": "PCI_BUS_ID"
+        }
+    ],
+    "DockerOptions": {
+        "shm_size": "10G",
+        "ulimits": {
+            "memlock": -1,
+            "stack": 67108864
+        },
+         "user": "1000:1000",
+        "ports": {
+            "8888": 8888
+        }
+    }
+}
+
+
+sudo gedit /etc/nvidia-container-runtime/config.toml

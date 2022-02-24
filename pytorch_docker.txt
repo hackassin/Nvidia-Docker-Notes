@@ -1,0 +1,125 @@
+1. NOTE: The SHMEM allocation limit is set to the default of 64MB.  This may be
+   insufficient for PyTorch.  NVIDIA recommends the use of the following flags:
+   nvidia-docker run --ipc=host ...
+
+Soln: sudo docker run --ipc=host --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/nvidia/pytorch:/media/amlan/LinuxDev/research/nvidia/pytorch nvcr.io/nvidia/pytorch:21.03-py3
+Latest: sudo docker run --ipc=host --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/nvidia/pytorch:/media/amlan/LinuxDev/research/nvidia/pytorch nvcr.io/nvidia/pytorch:21.10-py3
+
+DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix firefox:0.0.1
+-------------------------------
+sudo docker run --ipc=host --gpus all -it -p 8888:8888 --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix nvcr.io/nvidia/pytorch:21.03-py3
+-------------------------------
+sudo docker run --ipc=host --gpus all -it -p 8888:8888 --rm -e DISPLAY=$DISPLAY -v /home/Programs/pycharm-2021.1.3:/home/Programs/pycharm-2021.1.3 nvcr.io/nvidia/pytorch:21.03-py3
+
+
+sudo docker commit container_id nvcr.io/nvidia/pytorch:579641cd5de3
+
+2. The dataset size does not change after the pytorch transformations. Every Image is passed to the transformation and returned, thus the size remaining the same.
+
+   If you wish to use the original dataset with transformed one concat them.
+
+   e.g increased_dataset = torch.utils.data.ConcatDataset([transformed_dataset,original])
+
+
+sudo docker cp data_object_image_2.zip e6adad267dc5:/workspace/experiment/data/  
+
+Unzip label file again
+
+jupyter notebook --ip 0.0.0.0 --port 8888 --allow-root
+   
+Objective: To train an object detection model with KITTI dataset via PyTorch
+0. Don't forget to augment the dataset
+0.1. Don't forget to resize the input pixels between 0-1;
+0.2 Resize image as mentioned in DetectNet specs
+-- How to augment bounding boxes in KITTI dataset?
+--- https://blog.paperspace.com/data-augmentation-for-bounding-boxes/;
+--- Spatial Augmentation;
+--- HFlip, Translate;
+---- Test code for reading label files and ingesting data; 
+--- Rotational Shift? X
+--- Color Augmentation;
+---- Saturation, Hue, Contrast;
+--- Pointers;
+---- Keep hue color shift limited to reddish orange, yello, green, cyan
+---- Hue rotation: A representation of colors mapping from 0 to 360 degrees (Reference chart: https://www.quackit.com/pix/stock/color_wheel_hsl.png)
+---- For normalized images, keep the hue rotation factor between (0 - 0.5). To match the output hue factor with the chart, multiply by 255.
+---- Saturation scale: 0-1 (1 means no change), it is the amount of grayness in an image
+---- Brightness/Contrast: Illumination of an image (Range: 0 - 100%)  
+--- How to inject bbox values into text file;
+1. How to load the KITTI dataset via Torch and convert it to tensor?;
+2. How to fetch a pretrained model and work on it? ;
+3. How to add BBox regressor to the existing model? ; 
+-- Found guide;
+-- Create dataframe;
+
+User Warning: (When using autocast)
+warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step(): https://discuss.pytorch.org/t/userwarning-detected-call-of-lr-scheduler-step-before-optimizer-step-in-pytorch-1-1-0-and-later-you-should-call-them-in-the-opposite-order-optimizer-step-before-lr-scheduler-step/88295/4 () 
+
+spat_aug.translate((8,8))
+col_aug.hue_rotate(0.5)
+col_aug.saturation(1.5)
+col_aug.brightness(1.5)
+
+image_info['augimg_path'] = augimg_path
+image_info['auglabel_path'] = auglabel_path
+image_info['origlabel_path'] = origlabel_path
+image_info['img_bboxes'] = aug_class_obj.bboxes
+image_info['image_arr'] = aug_class_obj.image_arr  
+
+
+-----------------------------------------------------
+Reference: https://github.com/HosinPrime/simple-ssd-for-beginners/
+		 https://github.com/amdegroot/ssd.pytorch/blob/master/ssd.py
+	   -> https://github.com/uoip/SSD-variants 
+		 https://towardsdatascience.com/review-ssd-single-shot-detector-object-detection-851a94607d11
+
+LABEL - [X,Y,Z]
+
+1. Check item in classes
+-- if item exists in LABEL:
+---- keep the class and bbox
+-- else:
+---- remove item from classes, bbox from bboxes
+-- if len(classes)==0:
+--- remove row
+
+-> Understand mb encode equation for location
+-> Read how to modify the network to support 512x512 input image
+-> Revise SSD again
+
+Figured out the problem of pos_idx shape mismatch with pred_loc shape. The default bboxes are of that value. (24404)
+loc: 16, 98976
+conf: torch.Size([16, 148464])
+How to run pycharm in docker?
+
+-> https://medium.com/swlh/still-wondering-how-to-set-up-a-docker-interpreter-with-pycharm-5bfdb8e1e65d
+-> Enable display
+-> Download pycharm to docker workspace
+-> Run xhost+
+-> Update JDK, install certificates
+
+How to fix nan loss?
+
+-> Make sure you normalize the ground truth bounding box values
+
+New objectives:
+	
+-> AMP training
+--- Add AMP and test;
+--- Compare performance; (Only slight performance improvement)
+--- Improvise?
+-> Optimize model save and load with start,end epoch;
+-> Modify epoch progression in percentage
+-> Model eval and prediction
+--- Convert dataset to kitti format
+-> Prune model
+-> Modularize code (Notebook just for explanation of entire code)
+-> Add comments and notes for SSD functions and building blocks
+
+github token: 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		 
+
+https://download.jetbrains.com/python/pycharm-community-2021.2.1.tar.gz
+
+sudo docker cp <> a168ec626d59:experiment/data/pascal_voc/
+
+unzip file.zip -d destination_folder 

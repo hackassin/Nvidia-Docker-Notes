@@ -1,0 +1,6 @@
+sudo docker run --privileged  --gpus all -it -p 8888:8888 --rm -v /media/amlan/LinuxDev/research/git/yolov4-triton-tensorrt:/yolov4-triton-tensorrt nvcr.io/nvidia/tensorrt:21.07-py3
+sudo docker run --privileged  --runtime nvidia -it -p 8888:8888 --rm -v $(pwd)/yolov4-triton-tensorrt:/yolov4-triton-tensorrt nvcr.io/nvidia/tensorrt:21.07-py3
+
+Privileged mode is very very important for avoiding permission isssues. Often the ngc container fails to recognize the GPUs along with the driver.  
+
+https://forums.developer.nvidia.com/t/tensorflow-docker-cant-detect-gpu/164914
