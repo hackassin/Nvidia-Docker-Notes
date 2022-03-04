@@ -9,8 +9,6 @@ pip3 install nvidia-tao
 
 2. Login to nvcr.io
 
-bm5iYWw1ODZkbm9rZTRuMmE4czI4ZW9sNG86MWZjN2M4ZjEtMjk2Yi00ODBkLTk1NGYtYzc4ZjNhZjcwMTIw
-
 2. Create a file sudo gedit ~/.tao_mounts.json
 
 {

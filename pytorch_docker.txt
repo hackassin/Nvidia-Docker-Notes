@@ -114,9 +114,7 @@ New objectives:
 --- Convert dataset to kitti format
 -> Prune model
 -> Modularize code (Notebook just for explanation of entire code)
--> Add comments and notes for SSD functions and building blocks
-
-github token: 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		 
+-> Add comments and notes for SSD functions and building blocks		 
 
 https://download.jetbrains.com/python/pycharm-community-2021.2.1.tar.gz
 
