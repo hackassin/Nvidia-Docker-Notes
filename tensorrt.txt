@@ -4,3 +4,37 @@ sudo docker run --privileged  --runtime nvidia -it -p 8888:8888 --rm -v $(pwd)/y
 Privileged mode is very very important for avoiding permission isssues. Often the ngc container fails to recognize the GPUs along with the driver.  
 
 https://forums.developer.nvidia.com/t/tensorflow-docker-cant-detect-gpu/164914
+
+sudo docker run --privileged  --runtime nvidia -it -p 8888:8888 --rm -v $(pwd)/trt_engine/peoplenet:$(pwd)/trt_engine/peoplenet nvcr.io/nvidia/tritonserver:21.09-py3
+
+CUDA 11.1/CUDNN 8.0/ TENSORRT 7.2 : 20.10 - https issues
+CUDA 11.3/CUDNN 8.2/ TENSORRT 8.0 : 21.09
+
+export version="7.2.x.x"
+export arch=$(uname -m)
+export cuda="cuda-11.1"
+export cudnn="cudnn8.0"
+tar -xzvf TensorRT-${version}.Linux.${arch}-gnu.${cuda}.${cudnn}.tar.gz
+
+TAO Converter: https://docs.nvidia.com/tao/tao-toolkit/text/tensorrt.html
+
+./tao-converter \
+    -k tlt_encode \
+    -d 3,544,960 \
+    -i nchw \
+    -t fp16 \
+    -b 16 \
+    -m 64 \
+    -o output_cov/Sigmoid,output_bbox/BiasAdd \
+    -e peoplenet/model_21_09.plan \
+    peoplenet/resnet34_peoplenet_pruned.etlt
+    
+./tao-converter \
+    -k tlt_encode \
+    -d 3,544,960 \
+    -i nchw \
+    -t fp16 \
+    -m 16 \
+    -o output_cov/Sigmoid,output_bbox/BiasAdd \
+    -e peoplenet/model_21_09_m16.plan \
+    peoplenet/resnet34_peoplenet_pruned.etlt    
